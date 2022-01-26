@@ -39,8 +39,8 @@ export default function ChatPage() {
           borderRadius: "5px",
           backgroundColor: appConfig.theme.colors.neutrals[700],
           height: "100%",
-          maxWidth: "70%",
-          maxHeight: "70vh",
+          maxWidth: "95%",
+          maxHeight: "95vh",
           padding: "32px",
         
         }}
@@ -55,7 +55,6 @@ export default function ChatPage() {
             flexDirection: "column",
             borderRadius: "5px",
             padding: "16px",
-            fontSize: "20px",
           }}
         >
           <MessageList mensagens={listaDeMensagens} />
@@ -95,7 +94,7 @@ export default function ChatPage() {
                 padding: "6px 8px",
                 backgroundColor: appConfig.theme.colors.primary[100],
                 color: appConfig.theme.colors.neutrals[999],
-                fontSize: "20px",                
+           
               }}
             />
           </Box>
@@ -153,7 +152,6 @@ function MessageList(props) {
           borderRadius: "5px",
           padding: "6px",
           marginBottom: "12px",
-          fontSize: "20px",
           border: "1px",
           hover: {
             backgroundColor: appConfig.theme.colors.neutrals[800],
@@ -167,8 +165,8 @@ function MessageList(props) {
         >
           <Image
             styleSheet={{
-              width: "40px",
-              height: "40px",
+              width: "30px",
+              height: "30px",
               borderRadius: "50%",
               display: "inline-block",
               marginRight: "8px",
