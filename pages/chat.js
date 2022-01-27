@@ -1,18 +1,50 @@
 import { Box, Text, TextField, Image, Button } from "@skynexui/components";
 import React from "react";
 import appConfig from "../config.json";
+import { createClient, SupabaseClient } from "@supabase/supabase-js";
+
+const SUPABASE_ANON_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzI5MDYyNSwiZXhwIjoxOTU4ODY2NjI1fQ.79bP7zeRptmk442sJuWW2u4XnC5acnb0OMdkFCapKWw";
+const SUPABASE_URL = "https://trxhccrmifemmuwiwyoj.supabase.co";
+const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 export default function ChatPage() {
   const [mensagem, setMensagem] = React.useState("");
   const [listaDeMensagens, setListaDeMensagens] = React.useState([]);
+
+  React.useEffect(() => {
+    supabaseClient
+      .from("mensagens")
+      .select("*")
+      .order ('id', { ascending: false })
+      .then(({data}) => {
+        console.log("Dados da Consulta", data);
+        setListaDeMensagens(data);
+      });
+  }, []);
+
   // Sua lógica vai aqui
   function handleNovaMensagem(novaMensagem) {
     const mensagem = {
-      id: listaDeMensagens.length + 1,
-      de: "Davi Firmino",
+      // id: listaDeMensagens.length + 1,
+      de: "falaprodavi",
       texto: novaMensagem,
     };
-    setListaDeMensagens([mensagem, ...listaDeMensagens]);
+    
+    supabaseClient
+      .from('mensagens')
+      .insert([
+        mensagem
+      ])
+      .then(({ data }) => {
+        // console.log('Criando mensagem: ', oQueTaVindoComoResposta);
+        setListaDeMensagens([
+          data[0],
+          ...listaDeMensagens,
+        ])
+      });
+
+    //setListaDeMensagens([mensagem, ...listaDeMensagens]);
     setMensagem("");
   }
   // ./Sua lógica vai aqui
@@ -42,7 +74,6 @@ export default function ChatPage() {
           maxWidth: "95%",
           maxHeight: "95vh",
           padding: "32px",
-        
         }}
       >
         <Header />
@@ -51,7 +82,7 @@ export default function ChatPage() {
             position: "relative",
             display: "flex",
             flex: 1,
-            height: "80%",            
+            height: "80%",
             flexDirection: "column",
             borderRadius: "5px",
             padding: "16px",
@@ -68,8 +99,6 @@ export default function ChatPage() {
             styleSheet={{
               display: "flex",
               alignItems: "center",
-              
-              
             }}
           >
             <TextField
@@ -94,7 +123,6 @@ export default function ChatPage() {
                 padding: "6px 8px",
                 backgroundColor: appConfig.theme.colors.primary[100],
                 color: appConfig.theme.colors.neutrals[999],
-           
               }}
             />
           </Box>
@@ -113,16 +141,11 @@ function Header() {
           marginBottom: "16px",
           display: "flex",
           alignItems: "center",
-          justifyContent: "space-between",          
+          justifyContent: "space-between",
         }}
       >
         <Text variant="heading5">Chat</Text>
-        <Button
-          variant="tertiary"
-          color="read"
-          label="Logout"
-          href="/"
-        />
+        <Button variant="tertiary" color="read" label="Logout" href="/" />
       </Box>
     </>
   );
@@ -139,59 +162,54 @@ function MessageList(props) {
         flex: 1,
         color: appConfig.theme.colors.neutrals["100"],
         marginBottom: "16px",
-        
-        
       }}
     >
       {props.mensagens.map((mensagem) => {
-         return (
-            <Text
-            key={mensagem.id}
-        tag="li"
-        styleSheet={{
-          borderRadius: "5px",
-          padding: "6px",
-          marginBottom: "12px",
-          border: "1px",
-          hover: {
-            backgroundColor: appConfig.theme.colors.neutrals[800],
-          },
-        }}
-      >
-        <Box
-          styleSheet={{
-            marginBottom: "8px",
-          }}
-        >
-          <Image
-            styleSheet={{
-              width: "30px",
-              height: "30px",
-              borderRadius: "50%",
-              display: "inline-block",
-              marginRight: "8px",
-            }}
-            src={`https://github.com/falaprodavi.png`}
-          />
-          <Text tag="strong">
-              {mensagem.de}
-          </Text>
+        return (
           <Text
+            key={mensagem.id}
+            tag="li"
             styleSheet={{
-              fontSize: "10px",
-              marginLeft: "8px",
-              color: appConfig.theme.colors.neutrals[300],
+              borderRadius: "5px",
+              padding: "6px",
+              marginBottom: "12px",
+              border: "1px",
+              hover: {
+                backgroundColor: appConfig.theme.colors.neutrals[800],
+              },
             }}
-            tag="span"
           >
-            {new Date().toLocaleDateString()}
+            <Box
+              styleSheet={{
+                marginBottom: "8px",
+              }}
+            >
+              <Image
+                styleSheet={{
+                  width: "30px",
+                  height: "30px",
+                  borderRadius: "50%",
+                  display: "inline-block",
+                  marginRight: "8px",
+                }}
+                src={`https://github.com/${mensagem.de}.png`}
+              />
+              <Text tag="strong">{mensagem.de}</Text>
+              <Text
+                styleSheet={{
+                  fontSize: "10px",
+                  marginLeft: "8px",
+                  color: appConfig.theme.colors.neutrals[300],
+                }}
+                tag="span"
+              >
+                {new Date().toLocaleDateString()}
+              </Text>
+            </Box>
+            {mensagem.texto}
           </Text>
-        </Box>
-        {mensagem.texto}
-      </Text>
-         );
-      })}  
-      
+        );
+      })}
     </Box>
   );
 }
