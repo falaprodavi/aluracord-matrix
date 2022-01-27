@@ -6,12 +6,27 @@ function GlobalStyle() {
         padding: 0;
         box-sizing: border-box;
         list-style: none;
-        overflow-y: hidden;
-      }
-      body {
-        font-family: "Open Sans", sans-serif;
         
       }
+      body {
+        font-family: "Open Sans", sans-serif;        
+      }
+
+      .bn62 {
+        color: #1cc49d;
+        background-color: #1b2f31;
+        border-radius: 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 2em;
+        width: 5em;
+        font-size: 10px;
+        font-weight: 600;
+      }
+
+      
+
       /* App fit Height */
       html,
       body,

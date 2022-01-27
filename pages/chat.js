@@ -1,4 +1,11 @@
-import { Box, Text, TextField, Image, Button } from "@skynexui/components";
+import {
+  Box,
+  Text,
+  TextField,
+  Image,
+  Button,
+  Icon,
+} from "@skynexui/components";
 import React from "react";
 import appConfig from "../config.json";
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
@@ -16,8 +23,8 @@ export default function ChatPage() {
     supabaseClient
       .from("mensagens")
       .select("*")
-      .order ('id', { ascending: false })
-      .then(({data}) => {
+      .order("id", { ascending: false })
+      .then(({ data }) => {
         console.log("Dados da Consulta", data);
         setListaDeMensagens(data);
       });
@@ -26,25 +33,16 @@ export default function ChatPage() {
   // Sua lógica vai aqui
   function handleNovaMensagem(novaMensagem) {
     const mensagem = {
-      // id: listaDeMensagens.length + 1,
       de: "falaprodavi",
       texto: novaMensagem,
     };
-    
-    supabaseClient
-      .from('mensagens')
-      .insert([
-        mensagem
-      ])
-      .then(({ data }) => {
-        // console.log('Criando mensagem: ', oQueTaVindoComoResposta);
-        setListaDeMensagens([
-          data[0],
-          ...listaDeMensagens,
-        ])
-      });
 
-    //setListaDeMensagens([mensagem, ...listaDeMensagens]);
+    supabaseClient
+      .from("mensagens")
+      .insert([mensagem])
+      .then(({ data }) => {
+        setListaDeMensagens([data[0], ...listaDeMensagens]);
+      });
     setMensagem("");
   }
   // ./Sua lógica vai aqui
@@ -145,7 +143,7 @@ function Header() {
         }}
       >
         <Text variant="heading5">Chat</Text>
-        <Button variant="tertiary" color="read" label="Logout" href="/" />
+        <Button label="Logout" href="/" />
       </Box>
     </>
   );
@@ -157,10 +155,11 @@ function MessageList(props) {
     <Box
       tag="ul"
       styleSheet={{
+        overflowY: "scroll",
         display: "flex",
         flexDirection: "column-reverse",
         flex: 1,
-        color: appConfig.theme.colors.neutrals["100"],
+        color: appConfig.theme.colors.neutrals["000"],
         marginBottom: "16px",
       }}
     >
@@ -194,10 +193,12 @@ function MessageList(props) {
                 }}
                 src={`https://github.com/${mensagem.de}.png`}
               />
+
               <Text tag="strong">{mensagem.de}</Text>
+
               <Text
                 styleSheet={{
-                  fontSize: "10px",
+                  fontSize: "11px",
                   marginLeft: "8px",
                   color: appConfig.theme.colors.neutrals[300],
                 }}
@@ -205,6 +206,7 @@ function MessageList(props) {
               >
                 {new Date().toLocaleDateString()}
               </Text>
+              
             </Box>
             {mensagem.texto}
           </Text>
