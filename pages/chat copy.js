@@ -1,34 +1,23 @@
-import { Box, Text, TextField, Image, Button } from "@skynexui/components";
+import {
+  Box,
+  Text,
+  TextField,
+  Image,
+  Button,
+  Icon,
+} from "@skynexui/components";
 import React from "react";
 import appConfig from "../config.json";
-import { createClient } from "@supabase/supabase-js";
-import { useRouter } from "next/router";
-import { ButtonSendSticker } from "../src/components/ButtonSendSticker";
+import { createClient, SupabaseClient } from "@supabase/supabase-js";
 
 const SUPABASE_ANON_KEY =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzI5MDYyNSwiZXhwIjoxOTU4ODY2NjI1fQ.79bP7zeRptmk442sJuWW2u4XnC5acnb0OMdkFCapKWw";
 const SUPABASE_URL = "https://trxhccrmifemmuwiwyoj.supabase.co";
 const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-function escutaMensagensEmTempoReal(adicionaMensagem) {
-  return supabaseClient
-  .from('mensagens')
-  .on('INSERT', (repostaLive) => {
-    adicionaMensagem(repostaLive.new);
-  })
-  .subscribe();
-}
-
 export default function ChatPage() {
-  const roteamento = useRouter();
-  const usuarioLogado = roteamento.query.username;
   const [mensagem, setMensagem] = React.useState("");
-  const [listaDeMensagens, setListaDeMensagens] = React.useState([
-
-  ]);
-
-  if (listaDeMensagens.length === 0) {
-  }
+  const [listaDeMensagens, setListaDeMensagens] = React.useState([]);
 
   React.useEffect(() => {
     supabaseClient
@@ -36,24 +25,15 @@ export default function ChatPage() {
       .select("*")
       .order("id", { ascending: false })
       .then(({ data }) => {
-        console.log(data);
+        console.log("Dados da Consulta", data);
         setListaDeMensagens(data);
-      });
-
-      escutaMensagensEmTempoReal((novaMensagem) => {
-        setListaDeMensagens( (valorAtualDaLista) => {
-          return [
-            novaMensagem, 
-            ...valorAtualDaLista,
-          ]
-        });
       });
   }, []);
 
+  // Sua lógica vai aqui
   function handleNovaMensagem(novaMensagem) {
     const mensagem = {
-      //id: listaDeMensagens.length + 1,
-      de: usuarioLogado,
+      de: "falaprodavi",
       texto: novaMensagem,
     };
 
@@ -61,7 +41,7 @@ export default function ChatPage() {
       .from("mensagens")
       .insert([mensagem])
       .then(({ data }) => {
-      //   setListaDeMensagens([data[0], ...listaDeMensagens]);
+        setListaDeMensagens([data[0], ...listaDeMensagens]);
       });
     setMensagem("");
   }
@@ -81,13 +61,14 @@ export default function ChatPage() {
       });
   }
 
+  // ./Sua lógica vai aqui
   return (
     <Box
       styleSheet={{
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: appConfig.theme.colors.primary["000"],
+        backgroundColor: appConfig.theme.colors.primary[500],
         backgroundImage: `url(https://images.pexels.com/photos/3233371/pexels-photo-3233371.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260)`,
         backgroundRepeat: "no-repeat",
         backgroundSize: "cover",
@@ -102,7 +83,7 @@ export default function ChatPage() {
           flex: 1,
           boxShadow: "0 2px 10px 0 rgb(0 0 0 / 20%)",
           borderRadius: "5px",
-          backgroundColor: appConfig.theme.colors.beach["box"],
+          backgroundColor: appConfig.theme.colors.neutrals[700],
           height: "100%",
           maxWidth: "95%",
           maxHeight: "95vh",
@@ -116,16 +97,17 @@ export default function ChatPage() {
             display: "flex",
             flex: 1,
             height: "80%",
-            backgroundColor: appConfig.theme.colors.beach["fundo"],
             flexDirection: "column",
             borderRadius: "5px",
             padding: "16px",
           }}
         >
-          <MessageList
-            mensagens={listaDeMensagens}
-            handleDeletarMensagem={handleDeletarMensagem}
-          />
+          <MessageList mensagens={listaDeMensagens} />
+          {/* {listaDeMensagens.map((mensagemAtual) => {
+            return (
+            <li key={mensagemAtual.id}>
+                {mensagemAtual.de}: {mensagemAtual.texto}</li>
+          })} */}
           <Box
             as="form"
             styleSheet={{
@@ -145,7 +127,7 @@ export default function ChatPage() {
                   handleNovaMensagem(mensagem);
                 }
               }}
-              placeholder="Digite sua mensagem..."
+              placeholder="Insira sua mensagem aqui..."
               type="textarea"
               styleSheet={{
                 width: "100%",
@@ -153,33 +135,25 @@ export default function ChatPage() {
                 resize: "none",
                 borderRadius: "5px",
                 padding: "6px 8px",
-                backgroundColor: appConfig.theme.colors.beach["form"],
-                marginRight: "12px",
-                color: appConfig.theme.colors.beach["fundo"],
+                backgroundColor: appConfig.theme.colors.primary[100],
+                color: appConfig.theme.colors.neutrals[999],
               }}
-            />
-
-            <ButtonSendSticker 
-            onStickerClick={(sticker) => {
-              console.log('salva no BD', sticker);
-              handleNovaMensagem(':sticker:' + sticker);
-            }}
             />
 
             <Button
+              size="lg"
               variant="primary"
               colorVariant="neutral"
-              label="ENVIAR"
+              label="OK"
               buttonColors={{
-                contrastColor: appConfig.theme.colors.neutrals["800"],
-                backgroundColor: appConfig.theme.colors.beach["fundo"],
-                mainColorLight: appConfig.theme.colors.beach["box"],
-                mainColorStrong: appConfig.theme.colors.beach["box"],
+                contrastColor: appConfig.theme.colors.neutrals["000"],
+                mainColor: appConfig.theme.colors.primary["600"],
+                mainColorLight: appConfig.theme.colors.primary[500],
+                mainColorStrong: appConfig.theme.colors.primary["800"],
               }}
               styleSheet={{
-                borderRadius: "5px",
-                padding: "14px",
-                marginBottom: "10px",
+                borderRadius: "20px",
+                marginBottom: "8px",
               }}
               onClick={() => {
                 if (mensagem.length > 0) {
@@ -213,10 +187,10 @@ function Header() {
           label="Logout"
           href="/"
           buttonColors={{
-            contrastColor: appConfig.theme.colors.neutrals["100"],
-            mainColor: appConfig.theme.colors.beach["fundo"],
-            mainColorLight: appConfig.theme.colors.primary[500],
-            mainColorStrong: appConfig.theme.colors.primary["100"],
+            contrastColor: appConfig.theme.colors.neutrals["050"],
+            mainColor: appConfig.theme.colors.primary["800"],
+            mainColorLight: appConfig.theme.colors.primary[700],
+            mainColorStrong: appConfig.theme.colors.primary["900"],
           }}
         />
       </Box>
@@ -225,12 +199,12 @@ function Header() {
 }
 
 function MessageList(props) {
-  console.log(props);
+  console.log("MessageList", props);
   return (
     <Box
       tag="ul"
       styleSheet={{
-        overflowY: "auto",
+        overflowY: "scroll",
         display: "flex",
         flexDirection: "column-reverse",
         flex: 1,
@@ -247,8 +221,9 @@ function MessageList(props) {
               borderRadius: "5px",
               padding: "6px",
               marginBottom: "12px",
+              border: "1px",
               hover: {
-                backgroundColor: appConfig.theme.colors.neutrals[600],
+                backgroundColor: appConfig.theme.colors.neutrals[800],
               },
             }}
           >
@@ -259,22 +234,20 @@ function MessageList(props) {
             >
               <Image
                 styleSheet={{
-                  width: "20px",
-                  height: "20px",
+                  width: "30px",
+                  height: "30px",
                   borderRadius: "50%",
                   display: "inline-block",
                   marginRight: "8px",
-                  hover: {
-                    width: "60px",
-                    height: "60px",
-                  },
                 }}
                 src={`https://github.com/${mensagem.de}.png`}
               />
+
               <Text tag="strong">{mensagem.de}</Text>
+
               <Text
                 styleSheet={{
-                  fontSize: "10px",
+                  fontSize: "11px",
                   marginLeft: "8px",
                   color: appConfig.theme.colors.neutrals[300],
                 }}
@@ -285,14 +258,16 @@ function MessageList(props) {
               <Button
                 label="X"
                 buttonColors={{
-                  contrastColor: appConfig.theme.colors.neutrals["500"],
-                  mainColor: appConfig.theme.colors.beach["box"],
-                  mainColorLight: appConfig.theme.colors.beach["hover"],
-                  mainColorStrong: appConfig.theme.colors.beach["hover"],
+                  contrastColor: appConfig.theme.colors.neutrals["000"],
+                  mainColor: "transparent",
+                  mainColorLight: appConfig.theme.colors.primary[600],
+                  mainColorStrong: appConfig.theme.colors.primary["600"],
                 }}
                 styleSheet={{
-                  borderRadius: "45px",
-                  marginLeft: "20px",
+                  borderRadius: "2px",
+                  position: "absolute",
+                  right: "35px",
+                  padding: "5px",
                 }}
                 onClick={(event) => {
                   console.log(mensagem);
@@ -301,13 +276,7 @@ function MessageList(props) {
                 }}
               />
             </Box>
-
-            {mensagem.texto.startsWith(':sticker:') ? (
-              <Image src={mensagem.texto.replace(':sticker:', '')} width="200px" />
-            ) : (
-              mensagem.texto
-            )}
-
+            {mensagem.texto}
           </Text>
         );
       })}

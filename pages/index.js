@@ -1,9 +1,7 @@
 import { Box, Button, Text, TextField, Image } from "@skynexui/components";
 import React from "react";
-import { useRouter } from 'next/router';
+import { useRouter } from "next/router";
 import appConfig from "../config.json";
-
-
 
 function Titulo(props) {
   const Tag = props.tag || "h1";
@@ -35,9 +33,18 @@ function Titulo(props) {
 // export default HomePage
 
 export default function PaginaInicial() {
-  // const username = 'falaprodavi';
   const [username, setUsername] = React.useState("falaprodavi");
+  const [repositorios, setRepositorios] = React.useState("");
   const roteamento = useRouter();
+
+  fetch(`https://api.github.com/users/${username}`)
+    .then(function (resposta) {
+      return resposta.json();
+    })
+    .then(function (respostaConvertida) {
+      setRepositorios(respostaConvertida.public_repos);
+      return respostaConvertida;
+    });
 
   return (
     <>
@@ -76,10 +83,9 @@ export default function PaginaInicial() {
           <Box
             as="form"
             onSubmit={function (infosDoEvento) {
-              infosDoEvento.preventDefault()
-              console.log('Alguém submeteu um formulário')
-              roteamento.push('/chat')
-
+              infosDoEvento.preventDefault();
+              console.log("Alguém submeteu um formulário");
+              roteamento.push(`/chat?username=${username}`);
             }}
             styleSheet={{
               display: "flex",
@@ -164,13 +170,15 @@ export default function PaginaInicial() {
               minHeight: "240px",
             }}
           >
-            <Image
-              styleSheet={{
-                borderRadius: "50%",
-                marginBottom: "16px",
-              }}
-              src={`https://github.com/${username}.png`}
-            />
+            {username.length > 1 && (
+              <Image
+                styleSheet={{
+                  borderRadius: "50%",
+                  marginBottom: "16px",
+                }}
+                src={`https://github.com/${username}.png`}
+              />
+            )}
             <Text
               variant="body4"
               styleSheet={{
@@ -182,6 +190,21 @@ export default function PaginaInicial() {
             >
               {username}
             </Text>
+            <br />
+
+            {username.length > 1 && (
+              <Text
+                variant="body4"
+                styleSheet={{
+                  color: appConfig.theme.colors.neutrals[999],
+                  backgroundColor: appConfig.theme.colors.neutrals[700],
+                  padding: "3px 10px",
+                  borderRadius: "1000px",
+                }}
+              >
+                Repositórios: {repositorios}
+              </Text>
+            )}
           </Box>
           {/* Photo Area */}
         </Box>

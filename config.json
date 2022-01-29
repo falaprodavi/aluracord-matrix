@@ -27,10 +27,18 @@
           "800": "#00635D",
           "900": "#101418",
           "999": "#080A0C"
+        },
+        "beach": {
+          "fundo": "#555b6e",
+          "box": "#89b0ae",
+          "botao": "#bee3db",
+          "form": "#faf9f9",
+          "hover": "#ffd6ba"
         }
       }
     },
     "stickers": [
+      "https://agencianatural.com.br/gif/paulo.gif",
       "https://www.alura.com.br/imersao-react-4/assets/figurinhas/Figurinha_1.png",
       "https://www.alura.com.br/imersao-react-4/assets/figurinhas/Figurinha_2.png",
       "https://www.alura.com.br/imersao-react-4/assets/figurinhas/Figurinha_3.png",
